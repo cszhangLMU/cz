@@ -100,32 +100,35 @@ function cleanValue(s) {
     .trim();
 }
 
-function formatAuthors(authorString, highlightFullNames) {
+function formatAuthors(authorString, highlightNames) {
   if (!authorString) return '';
-  if (!highlightFullNames) highlightFullNames = [];
+  if (!highlightNames) highlightNames = [];
+
+  /* Split by " and " (BibTeX standard separator) */
   const authors = authorString.split(/\s+and\s+/);
+
   const formatted = authors.map(function(name) {
-    let firstFull, lastName, formattedName;
+    name = name.trim();
+
+    /* If "Last, First" format, swap to "First Last" for display */
+    let displayName = name;
     if (name.indexOf(',') !== -1) {
       const parts = name.split(',').map(function(s){ return s.trim(); });
-      lastName = parts[0];
-      firstFull = parts[1] || '';
-      const initials = firstFull.split(/\s+/).filter(function(p){ return p; }).map(function(p){ return p[0] + '.'; }).join(' ');
-      formattedName = (initials ? initials + ' ' : '') + lastName;
-    } else {
-      const parts = name.trim().split(/\s+/);
-      lastName = parts.pop();
-      firstFull = parts.join(' ');
-      const initials = parts.map(function(p){ return p[0] + '.'; }).join(' ');
-      formattedName = (initials ? initials + ' ' : '') + lastName;
+      displayName = (parts[1] || '') + ' ' + parts[0];
+      displayName = displayName.trim();
     }
-    const fullName = (firstFull + ' ' + lastName).toLowerCase().trim();
-    const isMatch = highlightFullNames.some(function(h){ return h.toLowerCase().trim() === fullName; });
+
+    /* Bold if this name matches one in highlightNames (any partial match) */
+    const lower = displayName.toLowerCase();
+    const isMatch = highlightNames.some(function(h){
+      return lower.indexOf(h.toLowerCase()) !== -1;
+    });
     if (isMatch) {
-      return '<span class="self">' + formattedName + '</span>';
+      return '<span class="self">' + displayName + '</span>';
     }
-    return formattedName;
+    return displayName;
   });
+
   return formatted.join(', ');
 }
 

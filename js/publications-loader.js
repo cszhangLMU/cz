@@ -20,7 +20,7 @@
     if (entry.project) links.push('<a href="' + entry.project + '" target="_blank">Project</a>');
     if (entry.doi)     links.push('<a href="https://doi.org/' + entry.doi + '" target="_blank">DOI</a>');
     if (links.length === 0) return '';
-    return ' &nbsp;·&nbsp; <span class="pub-links">[' + links.join('] [') + ']</span>';
+    return ' <span class="pub-links">[' + links.join('] [') + ']</span>';
   }
 
   /* Reconstruct BibTeX from a parsed entry */
